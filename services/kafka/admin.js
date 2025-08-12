@@ -7,7 +7,7 @@ const kafka = new Kafka({
 })
 
 // Creating kafka admin and connect to server
-const admin = kafka.admin
+const admin = kafka.admin()
 
 // Connect with server and create topics
 const connect = async() => {
