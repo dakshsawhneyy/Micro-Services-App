@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import {Kafka} from 'kafkajs'
 
 const app = express()
 
@@ -8,6 +9,27 @@ app.use(cors({
 }))
 
 app.use(express.json());
+
+
+// Creating Kafka Instance
+const kafka = new Kafka({
+    clientId:"payment-service",
+    brokers:["localhost:9094"]
+})
+
+// Creating kafka admin and connect to server
+const producter = kafka.producer()
+
+// Function for connecting to kafka
+const connectToKafka = async() => {
+    try {
+        await producter.connect();
+        console.log("Connected to Kafka successfully");
+    } catch (error) {
+        console.error("Error connecting to Kafka:", error);
+    }   
+}
+
 
 app.post('/payment-service', (req,res) => {
     try {
@@ -20,10 +42,15 @@ app.post('/payment-service', (req,res) => {
         console.log("Cart items:", cart)
         console.log("Total amount:", total)
 
-
         // TODO: Payment
 
         // KAFKA
+        producter.send({
+            topic: 'payment-successful',
+            messages: [
+                { value: JSON.stringify({ userID, cart, total }) }
+            ]
+        })
 
         res.status(200).json({message: "Payment processed successfully", userID, cart, total})
     } catch (error) {
@@ -33,5 +60,6 @@ app.post('/payment-service', (req,res) => {
 })
 
 app.listen(8000, () => {
+    connectToKafka()
     console.log('Payment service is running on port 8000')
 })
