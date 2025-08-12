@@ -1,9 +1,13 @@
-import Pay from './components/Pay'
+import { Route, Routes } from 'react-router-dom'
+import Cart from './components/Cart'
+
 
 const App = () => {
   return (
-    <div>
-      <Pay/>
+    <div className=''>
+      <Routes>
+        <Route path='/' element={<Cart/>} />
+      </Routes>
     </div>
   )
 }
