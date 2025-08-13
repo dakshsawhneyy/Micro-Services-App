@@ -18,12 +18,12 @@ const kafka = new Kafka({
 })
 
 // Creating kafka admin and connect to server
-const producter = kafka.producer()
+const producer = kafka.producer()
 
 // Function for connecting to kafka
 const connectToKafka = async() => {
     try {
-        await producter.connect();
+        await producer.connect();
         console.log("Connected to Kafka successfully");
     } catch (error) {
         console.error("Error connecting to Kafka:", error);
@@ -31,7 +31,7 @@ const connectToKafka = async() => {
 }
 
 
-app.post('/payment-service', (req,res) => {
+app.post('/payment-service', async(req,res) => {
     try {
         const {cart, total} = req.body
 
@@ -45,7 +45,7 @@ app.post('/payment-service', (req,res) => {
         // TODO: Payment
 
         // KAFKA
-        producter.send({
+        await producer.send({
             topic: 'payment-successful',
             messages: [
                 { value: JSON.stringify({ userID, cart, total }) }
